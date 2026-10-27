@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🤖 VISIONX — Autonomous Household Robot & 3D Engineering Simulation
 
 [![Built with Three.js](https://img.shields.io/badge/Three.js-WebGL_3D-black?style=for-the-badge&logo=three.js)](https://threejs.org/)
@@ -128,3 +129,7 @@ The compiled static website will be in the **`dist/`** directory. It is complete
 - **Track**: AI & Robotics / Emerging Technologies / Assistive Living
 - **Innovation**: Real-time browser-based 3D digital twin without heavy CAD installation or proprietary simulator dependencies.
 - **Impact**: Provides an intuitive visual validation benchmark for household service robotics, demonstrating that complex domestic tasks can be simulated, tested, and demonstrated interactively.
+=======
+# VisionX
+VisionX is an autonomous household robot that understands voice commands, identifies objects, navigates independently, and avoids obstacles by replanning routes. Future enhancements include physical robot integration, remote control, multilingual commands, and elderly assistance.
+>>>>>>> 1de92d24d70cc24bfb5028a63bb38f3bb0d5e492

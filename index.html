@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VISIONX — Autonomous Household Robot | 3D Engineering Visualization</title>
+  <meta name="description" content="Interactive 3D engineering visualization and realistic simulation of VISIONX, an autonomous vision-based household robot with tandem dual-wheel glide mobility and articulated dexterous manipulation.">
+  <link rel="stylesheet" href="./src/style.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300e5ff'><circle cx='12' cy='12' r='10'/></svg>">
+</head>
+<body>
+  <div id="app">
+    <!-- 3D WebGL Canvas Viewport -->
+    <div id="viewport-container"></div>
+
+    <!-- Top Engineering Header -->
+    <header class="top-header glass-panel">
+      <div class="brand-section">
+        <div class="brand-logo-text">VISION<span>X</span></div>
+        <div class="brand-badge">AUTONOMOUS HOUSEHOLD ROBOT</div>
+      </div>
+
+      <!-- Real-time Simulated Telemetry Bar -->
+      <div class="telemetry-row">
+        <div class="telemetry-pill">
+          <div class="telemetry-dot"></div>
+          <span>BATT:</span>
+          <span class="telemetry-val" id="telemetry-batt">98% (49.2V)</span>
+        </div>
+        <div class="telemetry-pill">
+          <span>COMPUTE:</span>
+          <span class="telemetry-val">550 TOPS</span>
+        </div>
+        <div class="telemetry-pill">
+          <span>STATE:</span>
+          <span class="telemetry-val" id="telemetry-state">AUTONOMOUS IDLE</span>
+        </div>
+        <div class="telemetry-pill">
+          <span>THERMAL:</span>
+          <span class="telemetry-val">42°C NOMINAL</span>
+        </div>
+      </div>
+
+      <!-- Mode Switcher -->
+      <div class="mode-switch-group">
+        <button id="btn-mode-studio" class="mode-btn active" title="Inspect Robot 3D Geometry">
+          3D Studio
+        </button>
+        <button id="btn-mode-household" class="mode-btn" title="Simulate Kitchen Fetch Mission">
+          Household Demo
+        </button>
+      </div>
+
+      <button id="btn-fullscreen" class="action-btn secondary" style="padding: 6px 12px; font-size: 12px;">
+        ⛶ Fullscreen
+      </button>
+    </header>
+
+    <!-- Left Engineering Inspector Panel -->
+    <aside class="left-panel glass-panel" id="inspector-panel">
+      <div class="panel-header">
+        <span class="panel-title">Component Telemetry</span>
+        <span class="status-badge" id="inspector-status">MONITORING</span>
+      </div>
+
+      <!-- Dynamic Inspector Card -->
+      <div class="inspector-card" id="inspector-card">
+        <div class="comp-badge-row">
+          <div class="comp-name" id="comp-name">Vision Core & Dome</div>
+          <span class="status-badge" id="comp-status">OPTIMAL</span>
+        </div>
+
+        <div class="spec-item">
+          <span class="spec-label">Subsystem Category</span>
+          <span class="spec-value spec-highlight" id="comp-category">Perception & SLAM</span>
+        </div>
+
+        <div class="spec-item">
+          <span class="spec-label">Degrees of Freedom (DoF)</span>
+          <span class="spec-value" id="comp-dof">3-DoF (Yaw ±90°, Pitch -30°/+45°)</span>
+        </div>
+
+        <div class="spec-item">
+          <span class="spec-label">Engineering Specifications</span>
+          <span class="spec-value" id="comp-specs">Dual Stereo RGB-D Cameras, 6-DoF IMU, 4-mic array</span>
+        </div>
+
+        <div class="spec-item">
+          <span class="spec-label">Material Formulation</span>
+          <span class="spec-value" id="comp-material">Carbon-aerogel shell with pearl clearcoat</span>
+        </div>
+
+        <div class="spec-item">
+          <span class="spec-label">Primary Function</span>
+          <span class="spec-value" id="comp-function">Visual SLAM mapping, obstacle detection, and human interaction.</span>
+        </div>
+      </div>
+
+      <!-- Subsystems Health Matrix -->
+      <div class="section-title">Subsystem Health</div>
+      <div class="systems-overview">
+        <div class="sys-stat-card">
+          <span class="sys-stat-title">LiDAR Array</span>
+          <span class="sys-stat-val">360° ACTIVE</span>
+        </div>
+        <div class="sys-stat-card">
+          <span class="sys-stat-title">Mobility Base</span>
+          <span class="sys-stat-val">4-WHEEL GLIDE</span>
+        </div>
+        <div class="sys-stat-card">
+          <span class="sys-stat-title">Arm Payload</span>
+          <span class="sys-stat-val">12 KG MAX</span>
+        </div>
+        <div class="sys-stat-card">
+          <span class="sys-stat-title">CAN-FD Bus</span>
+          <span class="sys-stat-val">1.0 Mbps 0 ERR</span>
+        </div>
+      </div>
+
+      <div style="font-size: 11px; color: var(--text-muted); line-height: 1.4; padding: 4px;">
+        💡 <em>Click or hover over any component in the 3D viewport to inspect mechanical specs and telemetry.</em>
+      </div>
+    </aside>
+
+    <!-- Right Controls Panel -->
+    <aside class="right-panel glass-panel" id="controls-panel">
+      <!-- Camera View Presets -->
+      <div class="section-group">
+        <div class="section-title">
+          <span>Camera Presets</span>
+          <button id="btn-reset-cam" class="action-btn secondary" style="padding: 2px 8px; font-size: 10px;">Reset</button>
+        </div>
+        <div class="chip-grid-3">
+          <button class="ctrl-btn active" data-view="isometric">3/4 Iso</button>
+          <button class="ctrl-btn" data-view="front">Front</button>
+          <button class="ctrl-btn" data-view="rear">Rear</button>
+          <button class="ctrl-btn" data-view="left">Left</button>
+          <button class="ctrl-btn" data-view="right">Right</button>
+          <button class="ctrl-btn" data-view="top">Top</button>
+          <button class="ctrl-btn" data-view="head">Visor</button>
+          <button class="ctrl-btn" data-view="feet">Wheels</button>
+          <button class="ctrl-btn" id="btn-toggle-autorotate">Auto-Spin</button>
+        </div>
+      </div>
+
+      <!-- Exploded Assembly Architecture View -->
+      <div class="section-group">
+        <div class="section-title">
+          <span>Exploded View</span>
+          <span id="exploded-val" style="font-family: 'JetBrains Mono'; font-size: 12px; color: var(--cyan-bright);">0%</span>
+        </div>
+        <div class="slider-container">
+          <input type="range" id="slider-explode" min="0" max="100" value="0">
+          <div class="slider-label-row">
+            <span>Assembled</span>
+            <span>Exploded Components</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Render & Material Modes -->
+      <div class="section-group">
+        <div class="section-title">Material & Shading</div>
+        <div class="chip-grid-2">
+          <button class="ctrl-btn active" data-material="realistic">Realistic PBR</button>
+          <button class="ctrl-btn" data-material="clay">CAD Clay</button>
+          <button class="ctrl-btn" data-material="wireframe">Wireframe</button>
+          <button class="ctrl-btn" data-material="xray">X-Ray Cyber</button>
+        </div>
+      </div>
+
+      <!-- Studio Lighting Presets -->
+      <div class="section-group">
+        <div class="section-title">Lighting Setup</div>
+        <div class="chip-grid-3">
+          <button class="ctrl-btn active" data-light="studio">Studio</button>
+          <button class="ctrl-btn" data-light="cleanLab">Clean Lab</button>
+          <button class="ctrl-btn" data-light="cyber">Cyber</button>
+        </div>
+      </div>
+
+      <!-- Kinematics & Animations -->
+      <div class="section-group">
+        <div class="section-title">Kinematics & Gestures</div>
+        <div class="chip-grid-2">
+          <button class="ctrl-btn active" data-anim="idle">Idle Breathing</button>
+          <button class="ctrl-btn" data-anim="wave">Friendly Wave</button>
+          <button class="ctrl-btn" data-anim="scan">360° Scan</button>
+          <button class="ctrl-btn" data-anim="drive">Drive & Roll</button>
+        </div>
+
+        <div style="display: flex; gap: 8px; margin-top: 4px;">
+          <button id="btn-anim-play" class="action-btn" style="flex: 1; padding: 6px;">Pause</button>
+          <button id="btn-anim-speed" class="action-btn secondary" style="flex: 1; padding: 6px;">Speed: 1x</button>
+        </div>
+      </div>
+
+      <!-- Manual Joint Controls (Collapsible) -->
+      <details class="section-group" style="cursor: pointer;">
+        <summary class="section-title" style="outline: none;">Manual Joint Controls ▾</summary>
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+          <div class="slider-container">
+            <div class="slider-label-row"><span>Head Yaw (Pan)</span><span id="val-head-yaw">0°</span></div>
+            <input type="range" id="joint-head-yaw" min="-90" max="90" value="0">
+          </div>
+          <div class="slider-container">
+            <div class="slider-label-row"><span>Head Pitch (Tilt)</span><span id="val-head-pitch">0°</span></div>
+            <input type="range" id="joint-head-pitch" min="-30" max="40" value="0">
+          </div>
+          <div class="slider-container">
+            <div class="slider-label-row"><span>Right Shoulder Pitch</span><span id="val-shoulder-r">0°</span></div>
+            <input type="range" id="joint-shoulder-r" min="-110" max="45" value="0">
+          </div>
+          <div class="slider-container">
+            <div class="slider-label-row"><span>Right Elbow Flex</span><span id="val-elbow-r">0°</span></div>
+            <input type="range" id="joint-elbow-r" min="-110" max="20" value="0">
+          </div>
+          <div class="slider-container">
+            <div class="slider-label-row"><span>Dexterous Grip</span><span id="val-grip">0%</span></div>
+            <input type="range" id="joint-grip" min="0" max="100" value="0">
+          </div>
+        </div>
+      </details>
+    </aside>
+
+    <!-- Bottom Household Mission Interactive Timeline (Active in Household Mode) -->
+    <footer class="bottom-mission-bar glass-panel" id="mission-bar">
+      <div class="mission-header-row">
+        <div class="mission-goal-text">
+          HOUSEHOLD AUTONOMOUS MISSION:
+          <span>“Bring the bowl of sabji from the refrigerator”</span>
+        </div>
+        <div class="status-badge" id="mission-status-pill">STEP 1/7: RECEIVE INSTRUCTION</div>
+      </div>
+
+      <!-- 7 Steps Navigation Chips -->
+      <div class="mission-steps-chips">
+        <div class="step-chip active" data-step="0">
+          <span class="step-chip-num">01. NLP</span>
+          <span class="step-chip-title">Receive Instruction</span>
+        </div>
+        <div class="step-chip" data-step="1">
+          <span class="step-chip-num">02. VISION</span>
+          <span class="step-chip-title">Identify Target</span>
+        </div>
+        <div class="step-chip" data-step="2">
+          <span class="step-chip-num">03. SLAM</span>
+          <span class="step-chip-title">Plan Trajectory</span>
+        </div>
+        <div class="step-chip" data-step="3">
+          <span class="step-chip-num">04. TRANSIT</span>
+          <span class="step-chip-title">Avoid Obstacle</span>
+        </div>
+        <div class="step-chip" data-step="4">
+          <span class="step-chip-num">05. DOCK</span>
+          <span class="step-chip-title">Open Refrigerator</span>
+        </div>
+        <div class="step-chip" data-step="5">
+          <span class="step-chip-num">06. GRASP</span>
+          <span class="step-chip-title">Retrieve Sabji</span>
+        </div>
+        <div class="step-chip" data-step="6">
+          <span class="step-chip-num">07. DELIVER</span>
+          <span class="step-chip-title">Return to User</span>
+        </div>
+      </div>
+
+      <!-- Mission Details & Interactive Controls -->
+      <div class="mission-footer-row">
+        <div class="mission-current-details" id="mission-details">
+          Instruction parsed: Natural Language Processing decodes task intent "FETCH", object "SABJI_BOWL", origin "REFRIGERATOR".
+        </div>
+
+        <div class="mission-controls-group">
+          <button id="btn-mission-prev" class="action-btn secondary">◀ Prev Step</button>
+          <button id="btn-mission-play" class="action-btn">▶ Auto Play</button>
+          <button id="btn-mission-next" class="action-btn">Next Step ▶</button>
+          <button id="btn-mission-reset" class="action-btn secondary">Reset</button>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bottom Watermark Disclaimer -->
+    <div class="watermark">
+      VISIONX AUTONOMOUS ROBOTICS DEMONSTRATOR • REALISTIC 3D KINEMATICS • SIMULATED DATA
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
